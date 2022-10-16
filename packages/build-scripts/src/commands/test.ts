@@ -1,3 +1,4 @@
+// @ts-ignore
 import { runCLI } from 'jest';
 import chalk from 'chalk';
 import Context, { IContextOptions } from '../core/Context';
@@ -89,7 +90,7 @@ export = async function({
         config: JSON.stringify(jestConfig),
       },
       [ctxRoot],
-    ).then((data) => {
+    ).then((data: any) => {
       const { results } = data;
       if (results.success) {
         resolve(data);

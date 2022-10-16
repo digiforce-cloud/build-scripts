@@ -349,7 +349,7 @@ class Context {
     if (fs.existsSync(configPath)) {
       try {
         userConfig = isJsFile ? require(configPath) : JSON5.parse(fs.readFileSync(configPath, 'utf-8')); // read build.json
-      } catch (err) {
+      } catch (err: any) {
         log.info('CONFIG', `Fail to load config file ${configPath}, use default config instead`);
         log.error('CONFIG', (err.stack || err.toString()));
         process.exit(1);
@@ -402,7 +402,7 @@ class Context {
 
       try {
         fn = require(pluginPath) // eslint-disable-line
-      } catch (err) {
+      } catch (err: any) {
         log.error('CONFIG', `Fail to load plugin ${pluginPath}`);
         log.error('CONFIG', (err.stack || err.toString()));
         process.exit(1);
@@ -544,6 +544,11 @@ class Context {
     });
   }
 
+  public hasRegistration = (name: string, type = 'userConfig') => {
+    const mappedType = type === 'cliOption' ? 'cliOptionRegistration' : 'userConfigRegistration';
+    return Object.keys(this[mappedType] || {}).includes(name);
+  }
+
   private runPlugins = async (): Promise<void> => {
     for (const pluginInfo of this.plugins) {
       const { fn, options } = pluginInfo;
@@ -564,6 +569,7 @@ class Context {
         getValue: this.getValue,
         registerUserConfig: this.registerUserConfig,
         registerCliOption: this.registerCliOption,
+        hasRegistration: this.hasRegistration,
         registerMethod: this.registerMethod,
         applyMethod: this.applyMethod,
         hasMethod: this.hasMethod,
